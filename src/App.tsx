@@ -1,13 +1,15 @@
-import { Suspense } from "react";
+import { Suspense, lazy } from "react";
 import { Routes, Route } from "react-router-dom";
-import { ProductProvider } from "@/contexts/ProductContext";
 import { AuthProvider } from "@/contexts/AuthContext";
 import { Navigation } from "@/components/Navigation";
-import { UserPortal } from "@/pages/UserPortal";
-import { AdminDashboard } from "@/pages/AdminDashboard";
-import { ProductDetail } from "@/pages/ProductDetail";
+import { Home } from "@/pages/Home";
+import { Registration } from "@/pages/Registration";
 import { Toaster } from "@/components/ui/toaster";
 import { Loader2 } from "lucide-react";
+
+// Lazy load admin pages
+const AdminSubmissions = lazy(() => import("@/pages/AdminSubmissions"));
+const AdminSettingsPage = lazy(() => import("@/pages/AdminSettings"));
 
 function LoadingFallback() {
   return (
@@ -23,22 +25,18 @@ function LoadingFallback() {
 function App() {
   return (
     <AuthProvider>
-      <ProductProvider>
-        <div className="relative min-h-screen noise-texture">
-          <Navigation />
-          <Suspense fallback={<LoadingFallback />}>
-            <Routes>
-              <Route path="/" element={<UserPortal />} />
-              <Route path="/admin" element={<AdminDashboard />} />
-              {/* Legacy route for backward compatibility */}
-              <Route path="/product/:id" element={<ProductDetail />} />
-              {/* New SEO-friendly route: /productname/id */}
-              <Route path="/:slug/:id" element={<ProductDetail />} />
-            </Routes>
-          </Suspense>
-          <Toaster />
-        </div>
-      </ProductProvider>
+      <div className="relative min-h-screen noise-texture">
+        <Navigation />
+        <Suspense fallback={<LoadingFallback />}>
+          <Routes>
+            <Route path="/" element={<Home />} />
+            <Route path="/register" element={<Registration />} />
+            <Route path="/admin/submissions" element={<AdminSubmissions />} />
+            <Route path="/admin/settings" element={<AdminSettingsPage />} />
+          </Routes>
+        </Suspense>
+        <Toaster />
+      </div>
     </AuthProvider>
   );
 }
